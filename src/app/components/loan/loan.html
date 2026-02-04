@@ -1,0 +1,47 @@
+<div class="loan-container">
+    <div class="header">
+        <button routerLink="/dashboard" class="back-btn">⬅ Geri</button>
+        <h2>Kredi Başvurusu</h2>
+    </div>
+
+    <div class="loan-card">
+        <div class="input-group">
+            <label>İhtiyacınız Olan Tutar</label>
+            <div class="amount-display">{{ amount() | currency:'TRY':'symbol':'1.0-0' }}</div>
+            <input type="range" min="1000" max="100000" step="1000" [(ngModel)]="amount" (input)="onAmountChange()">
+            <div class="range-labels">
+                <span>1.000 ₺</span>
+                <span>100.000 ₺</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Vade Süresi (Ay)</label>
+            <div class="amount-display">{{ months() }} Ay</div>
+            <input type="range" min="3" max="48" step="1" [(ngModel)]="months" (input)="onMonthChange()">
+            <div class="range-labels">
+                <span>3 Ay</span>
+                <span>48 Ay</span>
+            </div>
+        </div>
+
+        <div class="summary">
+            <div class="summary-item">
+                <span>Aylık Taksit</span>
+                <span class="value highlight">{{ monthlyPayment() | currency:'TRY':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="summary-item">
+                <span>Toplam Geri Ödeme</span>
+                <span class="value">{{ totalRepayment() | currency:'TRY':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="summary-item">
+                <span>Faiz Oranı</span>
+                <span class="value">%1.25</span>
+            </div>
+        </div>
+
+        <button class="apply-btn" (click)="apply()" [disabled]="isLoading()">
+            @if (isLoading()) { ⏳ İşleniyor... } @else { 🚀 Hemen Başvur }
+        </button>
+    </div>
+</div>

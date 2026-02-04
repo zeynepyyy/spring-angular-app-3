@@ -1,0 +1,41 @@
+<div class="analysis-container">
+    <div class="header">
+        <button routerLink="/dashboard" class="back-btn">⬅ Geri</button>
+        <h2>Harcama Analizi</h2>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loader">Yükleniyor...</div>
+    } @else {
+    @if (totalExpense() > 0) {
+    <div class="chart-section">
+        <!-- CSS Pie Chart -->
+        <div class="pie-chart" [style.background]="getConicGradient()">
+            <div class="inner-circle">
+                <span class="total-label">Toplam</span>
+                <span class="total-amount">{{ totalExpense() | currency:'TRY':'symbol':'1.0-0' }}</span>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            @for (item of chartData(); track item.category) {
+            <div class="legend-item">
+                <span class="color-box" [style.background]="item.color"></span>
+                <div class="legend-info">
+                    <span class="category">{{ item.category }}</span>
+                    <span class="percentage">%{{ item.percentage | number:'1.0-1' }}</span>
+                </div>
+                <span class="amount">{{ item.amount | currency:'TRY':'symbol':'1.0-0' }}</span>
+            </div>
+            }
+        </div>
+    </div>
+    } @else {
+    <div class="empty-state">
+        <h3>Henüz harcama verisi yok! 📉</h3>
+        <p>Harcamaya başladığınızda grafik burada belirecek.</p>
+    </div>
+    }
+    }
+</div>

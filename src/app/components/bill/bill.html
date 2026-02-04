@@ -1,0 +1,37 @@
+<div class="bill-container">
+    <h2>🧾 Fatura Ödeme Merkezi</h2>
+
+    <div class="account-selector">
+        <label>Ödeme Yapılacak Hesap:</label>
+        <select (change)="onAccountSelect($event)" [value]="selectedAccountId()">
+            @for (acc of accounts(); track acc.id) {
+            <option [value]="acc.id">{{ acc.accountNumber }} ({{ acc.balance | currency:'TRY':'symbol':'1.2-2' }})
+            </option>
+            }
+        </select>
+    </div>
+
+    <div class="bills-grid">
+        @for (bill of bills(); track bill.id) {
+        <div class="bill-card" [class.paid]="bill.status === 'PAID'">
+            <div class="bill-icon">
+                @if(bill.billType === 'ELEKTRIK') { ⚡ }
+                @else if(bill.billType === 'SU') { 💧 }
+                @else { 🌐 }
+            </div>
+            <div class="bill-info">
+                <h3>{{ bill.billType }}</h3>
+                <p>Son Ödeme: {{ bill.dueDate }}</p>
+                <div class="amount">{{ bill.amount | currency:'TRY':'symbol':'1.2-2' }}</div>
+            </div>
+            <div class="bill-action">
+                @if(bill.status === 'PAID') {
+                <span class="paid-badge">✔ ÖDENDİ</span>
+                } @else {
+                <button (click)="payBill(bill)">ÖDE</button>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>

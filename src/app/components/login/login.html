@@ -1,0 +1,55 @@
+<div class="login-page">
+  <div class="login-wrapper">
+    <!-- Left Side: Branding -->
+    <div class="login-branding">
+      <div class="brand-content">
+        <h1>Z-Bank</h1>
+        <p>Geleceğin Bankacılığına Hoş Geldiniz</p>
+        <p class="brand-subtext">Güvenli, Hızlı ve Kolay.</p>
+      </div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="login-form-container">
+      <div class="login-card">
+        <div class="form-header">
+          <h2>Giriş Yap</h2>
+          <p>Hesabınıza erişmek için bilgilerinizi girin.</p>
+        </div>
+
+        <form (ngSubmit)="onLogin()">
+          <div class="input-group">
+            <label for="username">Müşteri No / T.C.</label>
+            <div class="input-field">
+              <i class="icon-user">👤</i>
+              <input type="text" id="username" [(ngModel)]="username" name="username" placeholder="Müşteri numaranız"
+                required>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Şifre</label>
+            <div class="input-field">
+              <i class="icon-lock">🔒</i>
+              <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="••••••" required>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <!-- Optional: Remember me or Forgot Password links could go here -->
+            <a href="#" class="forgot-password">Şifremi Unuttum?</a>
+          </div>
+
+          <button type="submit" class="login-btn">
+            <span>Giriş Yap</span>
+            <i class="arrow-right">➜</i>
+          </button>
+        </form>
+
+        <div class="form-footer">
+          <p>Müşterimiz değil misiniz? <a href="#">Hemen Başvur</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

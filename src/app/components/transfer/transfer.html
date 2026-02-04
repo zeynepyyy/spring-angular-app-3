@@ -1,0 +1,40 @@
+<div class="transfer-panel">
+  <div class="panel-header">
+    <div class="header-icon">💸</div>
+    <h3>Hızlı Para Transferi</h3>
+  </div>
+
+  <div class="transfer-form">
+    <div class="form-row">
+      <div class="input-wrapper">
+        <label>Gönderen Hesap ID</label>
+        <input type="number" [(ngModel)]="fromId" placeholder="ID">
+      </div>
+
+      <div class="arrow-icon">➜</div>
+
+      <div class="input-wrapper">
+        <label>Alıcı Hesap ID</label>
+        <input type="number" [(ngModel)]="toId" placeholder="ID">
+      </div>
+    </div>
+
+    <div class="amount-row">
+      <label>Tutar (TL)</label>
+      <div class="amount-input">
+        <span>₺</span>
+        <input type="number" [(ngModel)]="amount" placeholder="0.00">
+      </div>
+    </div>
+
+    <button class="transfer-btn" (click)="onTransfer()" [disabled]="amount <= 0">
+      Transferi Onayla
+    </button>
+  </div>
+
+  @if (message()) {
+  <div class="status-message" [class.error]="message().includes('yetersiz') || message().includes('bulunamadı')">
+    {{ message() }}
+  </div>
+  }
+</div>

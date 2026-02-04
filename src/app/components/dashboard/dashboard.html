@@ -1,0 +1,167 @@
+<div class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">Z</div>
+      <h2>Z-Bank</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <span class="icon">📊</span>
+        <span>Özet</span>
+      </a>
+      <a routerLink="/analysis" class="nav-item" style="cursor: pointer;">
+        <span class="icon">📉</span>
+        <span>Harcama Analizi</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="icon">💳</span>
+        <span>Hesaplar</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="icon">💸</span>
+        <span>Transferler</span>
+      </a>
+      <a routerLink="/loan" class="nav-item" style="cursor: pointer;">
+        <span class="icon">💰</span>
+        <span>Kredi Çek</span>
+      </a>
+      <a routerLink="/bills" class="nav-item" style="cursor: pointer;">
+        <span class="icon">🧾</span>
+        <span>Faturalar</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="icon">📄</span>
+        <span>Ödemeler</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="icon">⚙️</span>
+        <span>Ayarlar</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" routerLink="/login">
+        <span class="icon">🚪</span>
+        <span>Güvenli Çıkış</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <h1>Hoş Geldiniz</h1>
+      <div class="user-profile">
+        <div class="avatar">U</div>
+        <span class="user-name">Sayın Müşteri</span>
+      </div>
+    </header>
+
+    <div class="content-scroll">
+      <!-- Feature Area: Transfer Component -->
+      <section class="action-section">
+        <app-transfer></app-transfer>
+      </section>
+
+      <!-- Accounts Grid -->
+      <section class="accounts-section">
+        <div class="section-header">
+          <h2>Hesaplarım</h2>
+          <button class="add-btn">+ Yeni Hesap</button>
+        </div>
+
+        @if (isLoading()) {
+        <div class="loader-container">
+          <div class="spinner"></div>
+          <p>Verileriniz güvenle yükleniyor...</p>
+        </div>
+        } @else {
+        <div class="cards-grid">
+          @for (acc of accounts(); track acc.id) {
+          <!-- Realistic Credit Card Design -->
+          <div class="credit-card" [ngClass]="getAccountClass(acc.accountType)"
+            [class.selected-card]="currentAccountId === acc.id" (click)="selectAccount(acc.id)"
+            style="cursor: pointer;">
+            <div class="card-chip">
+              <div class="chip-part"></div>
+            </div>
+            <div class="card-logo">Z-Bank</div>
+
+            <div class="card-balance">
+              <span class="label">Bakiye</span>
+              <span class="amount">{{ acc.balance | currency:'TRY':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <div class="card-details">
+              <div class="card-holder">
+                <span class="label">Hesap Sahibi</span>
+                <span class="value">SAYIN MÜŞTERİ</span>
+              </div>
+              <div class="card-number">
+                <span class="label">Hesap No</span>
+                <span class="value">{{ acc.accountNumber }}</span>
+              </div>
+            </div>
+
+            <div class="card-type-badge">{{ acc.accountType }}</div>
+
+            <!-- Goal Progress Overlay for 'HEDEF' accounts -->
+            @if (acc.accountType?.toUpperCase() === 'HEDEF') {
+            <div class="goal-overlay">
+              <div class="goal-info">
+                <span>Hedef: {{ acc.goalAmount | currency:'TRY':'symbol-narrow':'1.0-0' }}</span>
+                <span>%{{ ((acc.balance / acc.goalAmount) * 100) | number:'1.0-0' }}</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="(acc.balance / acc.goalAmount) * 100"></div>
+              </div>
+            </div>
+            }
+          </div>
+          } @empty {
+          <div class="empty-state">
+            <p>Henüz aktif bir hesabınız bulunmamaktadır.</p>
+            <button class="create-acc-btn">Hesap Oluştur</button>
+          </div>
+          }
+        </div>
+        }
+      </section>
+      <!-- Transaction History Table -->
+      <div class="table-container">
+        <div class="table-header-title">
+          <h3>Son İşlemler</h3>
+        </div>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Açıklama</th>
+              <th>Tutar</th>
+              <th>Tarih</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of transactionLogs(); track log.id) {
+            <tr>
+              <td>{{ log.description }}</td>
+              <td [class.amount-positive]="log.amount > 0" [class.amount-negative]="log.amount < 0">
+                {{ log.amount | currency:'TRY':'symbol':'1.2-2' }}
+              </td>
+              <td>{{ log.transactionDate | date:'dd.MM.yyyy HH:mm' }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" class="empty-state-row">
+                <div class="empty-content">
+                  <span class="empty-icon">📂</span>
+                  <span>Henüz işlem kaydı bulunmamaktadır.</span>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
