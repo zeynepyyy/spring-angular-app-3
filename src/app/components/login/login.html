@@ -1,15 +1,15 @@
 <div class="login-page">
   <div class="login-wrapper">
-    <!-- Left Side: Branding -->
+
     <div class="login-branding">
       <div class="brand-content">
-        <h1>Z-Bank</h1>
+        <img src="/assets/logo.png" alt="Z-Bank Logo" class="login-logo">
         <p>Geleceğin Bankacılığına Hoş Geldiniz</p>
         <p class="brand-subtext">Güvenli, Hızlı ve Kolay.</p>
       </div>
     </div>
 
-    <!-- Right Side: Login Form -->
+    <
     <div class="login-form-container">
       <div class="login-card">
         <div class="form-header">
@@ -19,7 +19,7 @@
 
         <form (ngSubmit)="onLogin()">
           <div class="input-group">
-            <label for="username">Müşteri No / T.C.</label>
+            <label for="username">Email / T.C.</label>
             <div class="input-field">
               <i class="icon-user">👤</i>
               <input type="text" id="username" [(ngModel)]="username" name="username" placeholder="Müşteri numaranız"

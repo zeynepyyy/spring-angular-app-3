@@ -11,20 +11,24 @@ import { AccountService } from '../../services/account';
   styleUrl: './transfer.css'
 })
 export class TransferComponent {
-  fromId: number = 0;
-  toId: number = 0;
+  fromAccountNumber: string = '';
+  toAccountNumber: string = '';
   amount: number = 0;
   message = signal<string>('');
 
-  constructor(private accountService: AccountService) {}
+  constructor(private accountService: AccountService) { }
 
   onTransfer() {
-    if (this.fromId && this.toId && this.amount > 0) {
-      this.accountService.transferMoney(this.fromId, this.toId, this.amount).subscribe({
+    if (this.fromAccountNumber && this.toAccountNumber && this.amount > 0) {
+      // Remove all spaces from account numbers
+      const cleanFrom = this.fromAccountNumber.replace(/\s/g, "");
+      const cleanTo = this.toAccountNumber.replace(/\s/g, "");
+
+      this.accountService.transferMoney(cleanFrom, cleanTo, this.amount).subscribe({
         next: (res) => {
           this.message.set("✅ " + res);
 
-         setTimeout(() => location.reload(), 2000);
+          setTimeout(() => location.reload(), 2000);
         },
         error: (err) => {
           this.message.set("❌ Hata: Transfer gerçekleşemedi!");

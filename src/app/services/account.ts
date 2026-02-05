@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TransactionLog } from '../models/transactionLog';
 
+export interface Customer {
+  firstName: string;
+  lastName: string;
+}
+
 export interface Account {
   id: number;
   accountNumber: string;
@@ -10,6 +15,7 @@ export interface Account {
   accountType: string;
   goalAmount: number;
   status: string;
+  customer?: Customer;
 }
 
 @Injectable({
@@ -29,8 +35,8 @@ export class AccountService {
     return this.http.get(`${this.apiUrl}/${id}/goal-status`, { responseType: 'text' });
   }
 
-  transferMoney(fromId: number, toId: number, amount: number): Observable<string> {
-    const url = `${this.apiUrl}/transfer?fromId=${fromId}&toId=${toId}&amount=${amount}`;
+  transferMoney(fromAccountNumber: string, toAccountNumber: string, amount: number): Observable<string> {
+    const url = `${this.apiUrl}/transfer?fromAccountNumber=${fromAccountNumber}&toAccountNumber=${toAccountNumber}&amount=${amount}`;
     return this.http.post(url, {}, { responseType: 'text' });
   }
 
@@ -57,5 +63,19 @@ export class AccountService {
 
   getLoanLimit(customerId: number): Observable<number> {
     return this.http.get<number>(`http://localhost:8082/api/loans/limit/${customerId}`);
+  }
+
+  repayLoan(loanAccountId: number, sourceAccountId: number, amount: number): Observable<string> {
+    const url = `http://localhost:8082/api/loans/repay?loanAccountId=${loanAccountId}&sourceAccountId=${sourceAccountId}&amount=${amount}`;
+    return this.http.post(url, {}, { responseType: 'text' });
+  }
+
+  processQR(accountId: number, amount: number, action: 'WITHDRAW' | 'DEPOSIT'): Observable<string> {
+    const url = `http://localhost:8082/api/accounts/qr?accountId=${accountId}&amount=${amount}&action=${action}`;
+    return this.http.post(url, {}, { responseType: 'text' });
+  }
+
+  createAccount(account: any): Observable<Account> {
+    return this.http.post<Account>(this.apiUrl, account);
   }
 }

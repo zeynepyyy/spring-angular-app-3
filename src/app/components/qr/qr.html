@@ -1,0 +1,64 @@
+<div class="qr-container">
+    <div class="page-header">
+        <button routerLink="/dashboard" class="back-btn">← Geri</button>
+        <h2>QR İşlemleri</h2>
+    </div>
+
+    @if (!scanSuccess()) {
+    <div class="scan-area">
+        <div class="camera-frame" [class.scanning]="isScanning()">
+            @if (!cameraPermission()) {
+            <div class="cam-placeholder">
+                <span class="icon">📷</span>
+                <p>QR okutmak için kamerayı açın</p>
+            </div>
+            } @else {
+            <div class="live-cam">
+                <div class="scan-line"></div>
+            </div>
+            }
+        </div>
+
+        @if (!isScanning()) {
+        <button class="primary-btn" (click)="startScan()">
+            {{ cameraPermission() ? 'Tekrar Tara' : 'Kamerayı Aç' }}
+        </button>
+        } @else {
+        <p>Taranıyor...</p>
+        }
+    </div>
+    } @else {
+    <div class="transaction-form card-anim">
+        <div class="success-msg">
+            <span class="check">✅</span>
+            <p>QR Kod Başarıyla Okundu!</p>
+            <small>ATM ID: #TR-8842</small>
+        </div>
+
+        <div class="form-group">
+            <label>Hesap Seçin</label>
+            <select class="form-input" (change)="selectedAccountId.set(+$any($event.target).value)">
+                @for (acc of accounts(); track acc.id) {
+                <option [value]="acc.id">{{ acc.accountNumber }} - {{ acc.balance }} TL</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>İşlem Türü</label>
+            <div class="toggle-group">
+                <button [class.active]="action() === 'WITHDRAW'" (click)="action.set('WITHDRAW')">Para Çek</button>
+                <button [class.active]="action() === 'DEPOSIT'" (click)="action.set('DEPOSIT')">Para Yatır</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Tutar</label>
+            <input type="number" [ngModel]="amount()" (ngModelChange)="amount.set($event)" class="form-input"
+                placeholder="0.00">
+        </div>
+
+        <button class="confirm-btn" (click)="confirmTransaction()">İşlemi Onayla</button>
+    </div>
+    }
+</div>

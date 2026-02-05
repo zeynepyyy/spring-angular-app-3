@@ -1,0 +1,50 @@
+<div class="exchange-container">
+    <h2>💱 Döviz & Altın Borsası</h2>
+
+    <div class="rates-ticker">
+        <div class="rate-item">🇺🇸 USD: {{ rates()['USD'] | number:'1.2-2' }}</div>
+        <div class="rate-item">🇪🇺 EUR: {{ rates()['EUR'] | number:'1.2-2' }}</div>
+        <div class="rate-item">🪙 ALTIN: {{ rates()['GA'] | number:'1.2-2' }}</div>
+    </div>
+
+    <div class="trade-box">
+        <h3>Hızlı İşlem (Al/Sat)</h3>
+
+        <div class="form-group">
+            <label>Satılacak (Kaynak)</label>
+            <div class="input-row">
+                <input type="number" [(ngModel)]="amount" (input)="calculate()" placeholder="Miktar">
+                <select [(ngModel)]="fromCurrency" (change)="calculate()">
+                    <option value="TRY">TRY (Türk Lirası)</option>
+                    <option value="USD">USD (Amerikan Doları)</option>
+                    <option value="EUR">EUR (Euro)</option>
+                    <option value="GA">GA (Gram Altın)</option>
+                </select>
+            </div>
+            <small>Mevcut Varlıklarınız:
+                @for(acc of accounts(); track acc.id) {
+                @if(acc.currency === fromCurrency()) {
+                <span class="balance">{{ acc.balance | number:'1.2-2' }} {{ acc.currency }}</span>
+                }
+                }
+            </small>
+        </div>
+
+        <div class="icon-swap">⬇</div>
+
+        <div class="form-group">
+            <label>Alınacak (Hedef)</label>
+            <div class="input-row">
+                <input type="number" [value]="estimatedAmount() | number:'1.2-2'" disabled>
+                <select [(ngModel)]="toCurrency" (change)="calculate()">
+                    <option value="TRY">TRY</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GA">GA (Altın)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="trade-btn" (click)="onTrade()">İŞLEMİ ONAYLA</button>
+    </div>
+</div>

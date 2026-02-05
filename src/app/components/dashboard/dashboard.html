@@ -1,14 +1,14 @@
-<div class="dashboard-layout">
+<div class="dashboard-layout" [class.dark-mode]="isDarkMode()">
 
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div class="logo-icon">Z</div>
-      <h2>Z-Bank</h2>
+      <img src="/assets/logo.png" alt="Z-Bank Logo" class="brand-logo">
     </div>
 
     <nav class="sidebar-nav">
-      <a href="#" class="nav-item active">
+      <a href="javascript:void(0)" class="nav-item" [class.active]="activeView() === 'dashboard'"
+        (click)="setView('dashboard')">
         <span class="icon">📊</span>
         <span>Özet</span>
       </a>
@@ -16,11 +16,12 @@
         <span class="icon">📉</span>
         <span>Harcama Analizi</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="javascript:void(0)" class="nav-item" [class.active]="activeView() === 'accounts'"
+        (click)="setView('accounts')">
         <span class="icon">💳</span>
         <span>Hesaplar</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="javascript:void(0)" class="nav-item" (click)="toggleTransfer()">
         <span class="icon">💸</span>
         <span>Transferler</span>
       </a>
@@ -32,15 +33,43 @@
         <span class="icon">🧾</span>
         <span>Faturalar</span>
       </a>
-      <a href="#" class="nav-item">
-        <span class="icon">📄</span>
-        <span>Ödemeler</span>
+      <a routerLink="/exchange" class="nav-item" style="cursor: pointer;">
+        <span class="icon">📈</span>
+        <span>Döviz & Altın</span>
       </a>
-      <a href="#" class="nav-item">
+
+      <a href="javascript:void(0)" class="nav-item" (click)="toggleProfileSettings()">
         <span class="icon">⚙️</span>
         <span>Ayarlar</span>
       </a>
     </nav>
+
+
+    <div class="currency-widget">
+      <h3>Piyasalar 📈</h3>
+      <div class="currency-item">
+        <span class="currency-name">USD/TRY</span>
+        <span class="currency-rate">{{ currencyRates().usd | number:'1.2-2' }} ₺</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-name">EUR/TRY</span>
+        <span class="currency-rate">{{ currencyRates().eur | number:'1.2-2' }} ₺</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-name">ALTIN (Gr)</span>
+        <span class="currency-rate">{{ currencyRates().gold | number:'1.0-0' }} ₺</span>
+      </div>
+    </div>
+
+
+    <div class="quick-actions">
+      <h3>Hızlı İşlemler ⚡</h3>
+      <div class="action-buttons">
+        <button class="action-btn">🧾 Fatura Öde</button>
+        <button class="action-btn" routerLink="/qr">📷 QR ile Öde</button>
+        <button class="action-btn">💱 Döviz Al/Sat</button>
+      </div>
+    </div>
 
     <div class="sidebar-footer">
       <button class="logout-btn" routerLink="/login">
@@ -50,28 +79,91 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
+
   <main class="main-content">
     <header class="top-bar">
       <h1>Hoş Geldiniz</h1>
       <div class="user-profile">
-        <div class="avatar">U</div>
-        <span class="user-name">Sayın Müşteri</span>
+        <button class="theme-toggle-btn" (click)="toggleTheme()"
+          [title]="isDarkMode() ? 'Karanlık Mod' : 'Aydınlık Mod'">
+          {{ isDarkMode() ?   '🌙' :'☀️'}}
+        </button>
+
+
+        <div class="notification-wrapper">
+          <button class="notification-btn" (click)="toggleNotifications()">
+            🔔
+            @if (unreadCount > 0) {
+            <span class="badge">{{ unreadCount }}</span>
+            }
+          </button>
+
+          @if (showNotifications()) {
+          <div class="notification-dropdown">
+            <h3>Bildirimler</h3>
+            @for (note of notifications(); track note.id) {
+            <div class="notification-item" [class.unread]="!note.isRead">
+              <div class="note-text">{{ note.message }}</div>
+              <div class="note-time">{{ note.createDate | date:'dd.MM.yyyy HH:mm' }}</div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="user-profile-clickable" (click)="toggleProfileSettings()" title="Profil Ayarları">
+          <div class="avatar">U</div>
+          <span class="user-name">{{ getCustomerName() }}</span>
+        </div>
       </div>
     </header>
 
-    <div class="content-scroll">
-      <!-- Feature Area: Transfer Component -->
-      <section class="action-section">
-        <app-transfer></app-transfer>
-      </section>
 
-      <!-- Accounts Grid -->
+    @if (showProfileSettings()) {
+    <div class="modal-overlay" (click)="toggleProfileSettings()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Profil Ayarları</h3>
+          <button class="close-btn" (click)="toggleProfileSettings()">✖</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Ad Soyad</label>
+            <input type="text" [value]="getCustomerName()" disabled>
+          </div>
+          <div class="form-group">
+            <label>E-posta</label>
+            <input type="email" value="ornek@email.com" disabled>
+          </div>
+          <div class="form-group">
+            <label>Şifre</label>
+            <input type="password" value="********" disabled>
+            <button class="link-btn">Şifre Değiştir</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="save-btn">Kaydet</button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div class="content-scroll">
+
       <section class="accounts-section">
         <div class="section-header">
           <h2>Hesaplarım</h2>
-          <button class="add-btn">+ Yeni Hesap</button>
+          <div class="header-actions">
+            <button class="transfer-toggle-btn" (click)="toggleTransfer()">💸 Transfer Yap</button>
+            <button class="add-btn" (click)="createVirtualCard()">+ Sanal Kart Oluştur</button>
+          </div>
         </div>
+
+        @if (showTransfer()) {
+        <div class="transfer-dropdown">
+          <app-transfer></app-transfer>
+        </div>
+        }
 
         @if (isLoading()) {
         <div class="loader-container">
@@ -81,7 +173,7 @@
         } @else {
         <div class="cards-grid">
           @for (acc of accounts(); track acc.id) {
-          <!-- Realistic Credit Card Design -->
+
           <div class="credit-card" [ngClass]="getAccountClass(acc.accountType)"
             [class.selected-card]="currentAccountId === acc.id" (click)="selectAccount(acc.id)"
             style="cursor: pointer;">
@@ -98,7 +190,7 @@
             <div class="card-details">
               <div class="card-holder">
                 <span class="label">Hesap Sahibi</span>
-                <span class="value">SAYIN MÜŞTERİ</span>
+                <span class="value">{{ acc.customer?.firstName }} {{ acc.customer?.lastName }}</span>
               </div>
               <div class="card-number">
                 <span class="label">Hesap No</span>
@@ -108,18 +200,27 @@
 
             <div class="card-type-badge">{{ acc.accountType }}</div>
 
-            <!-- Goal Progress Overlay for 'HEDEF' accounts -->
-            @if (acc.accountType?.toUpperCase() === 'HEDEF') {
-            <div class="goal-overlay">
-              <div class="goal-info">
-                <span>Hedef: {{ acc.goalAmount | currency:'TRY':'symbol-narrow':'1.0-0' }}</span>
-                <span>%{{ ((acc.balance / acc.goalAmount) * 100) | number:'1.0-0' }}</span>
+
+            @if (acc.accountType === 'KREDI' && acc.balance < 0) { <button class="pay-debt-btn"
+              (click)="openPaymentModal(acc); $event.stopPropagation()">
+              Borç Öde
+              </button>
+              }
+
+
+              @if (acc.accountType?.toUpperCase() === 'HEDEF' && acc.goalAmount > 0) {
+              <div class="goal-overlay">
+                <div class="goal-info">
+                  <span>Hedef: {{ acc.goalAmount | currency:'TRY':'symbol-narrow':'1.0-0' }}</span>
+                  <span>%{{ ((acc.balance / acc.goalAmount) * 100) | number:'1.0-0' }}</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill"
+                    [style.width.%]="((acc.balance / acc.goalAmount) * 100) > 100 ? 100 : ((acc.balance / acc.goalAmount) * 100)">
+                  </div>
+                </div>
               </div>
-              <div class="progress-track">
-                <div class="progress-fill" [style.width.%]="(acc.balance / acc.goalAmount) * 100"></div>
-              </div>
-            </div>
-            }
+              }
           </div>
           } @empty {
           <div class="empty-state">
@@ -130,7 +231,7 @@
         </div>
         }
       </section>
-      <!-- Transaction History Table -->
+
       <div class="table-container">
         <div class="table-header-title">
           <h3>Son İşlemler</h3>
@@ -165,3 +266,43 @@
           </tbody>
         </table>
       </div>
+    </div>
+  </main>
+</div>
+
+
+@if (showPaymentModal()) {
+<div class="modal-overlay" (click)="closePaymentModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Kredi Borcu Ödeme</h3>
+      <button class="close-btn" (click)="closePaymentModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Ödenecek Hesap</label>
+        <input type="text" [value]="selectedLoanAccount?.accountNumber" disabled style="background: #eee;">
+      </div>
+      <div class="form-group">
+        <label>Kaynak Hesap (Vadesiz)</label>
+        <select class="form-input" (change)="paymentSourceId = +$any($event.target).value">
+          <option value="">Seçiniz</option>
+          @for (acc of accounts(); track acc.id) {
+          @if (acc.accountType?.toUpperCase() === 'VADESIZ') {
+          <option [value]="acc.id">{{ acc.accountNumber }} ({{ acc.balance | currency:'TRY':'symbol':'1.0-0' }})
+          </option>
+          }
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tutar</label>
+        <input type="number" [(ngModel)]="paymentAmount" class="form-input">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="save-btn" (click)="submitPayment()">Ödemeyi Onayla</button>
+    </div>
+  </div>
+</div>
+}
